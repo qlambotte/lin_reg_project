@@ -1,14 +1,10 @@
-import numpy as np
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 from sklearn import linear_model
-import sklearn.feature_selection as featsel
-from sklearn.model_selection import StratifiedKFold
 from sklearn.model_selection import train_test_split
 from matplotlib.backends.backend_pdf import PdfPages
 from sklearn.metrics import mean_squared_error, r2_score
-from matplotlib.ticker import FormatStrFormatter
 
 df = pd.read_csv("./data/data_cleaned.csv", index_col=0)
 df2 = pd.read_csv("./data/data.csv")
