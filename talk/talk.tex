@@ -1,0 +1,151 @@
+\documentclass[handout,10pt,hyperref={urlcolor=orange}]{beamer}
+
+\usetheme{metropolis}
+\usepackage{appendixnumberbeamer}
+\usepackage{booktabs}
+\usepackage[scale=2]{ccicons}
+%\usepackage{minted}
+%\usepackage{pgfplots}
+%\usepgfplotslibrary{dateplot}
+\usepackage{hyperref}
+\usepackage{xspace}
+\usepackage{graphicx}
+\newcommand{\themename}{\textbf{\textsc{metropolis}}\xspace}
+
+\title{Modelling real estate market with a linear regression}
+\date{\today}
+\author{Quentin Lambotte}
+% \titlegraphic{\hfill\includegraphics[height=1.5cm]{logo.pdf}}
+
+\begin{document}
+
+\maketitle
+
+% \begin{frame}{Table of contents}
+%   \setbeamertemplate{section in toc}[sections numbered]
+%   \tableofcontents[hideallsubsections]
+% \end{frame}
+
+\section{Modelling}
+
+\begin{frame}{Modelling: steps}
+  \begin{enumerate}
+  \item Cleaning:
+    \begin{itemize}
+    \item correlation analysis: one feature was highly correlated to another (Entry phone), which was removed;
+    \item outliers analysis: there was a lot of outliers, especially in the price and surface features. They were removed using $z$-scores.
+    \end{itemize}
+  \item Model exploration: feature selection for ordinary linear regression (OLR), try other linear model against the whole data set.
+  \item Model: in the end, I used an OLR, with 67\% of the data for training.
+  \end{enumerate}
+\end{frame}
+\begin{frame}{Modelling: results}
+  The linear model is not so good globally...
+  \begin{table}
+    \centering
+    \begin{tabular}{lr}
+      \toprule
+      {} &        Belgium \\
+      \midrule
+      R² for training data  &           0.43 \\
+      R² for testing data   &           0.42 \\
+      RMSE/mean price  & 35\% \\
+      Size of data          &       12691 \\
+      Size of training data &        8502 \\
+      Size of test data     &        4189 \\
+      \bottomrule
+    \end{tabular}
+    \caption{Results of OLR in Belgium}
+  \end{table}
+
+\end{frame}
+\begin{frame}{Improvement}
+  I tried the following improvement; make OLR according region and type. This is based on graphs like this one:
+  \begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.5]{improvement.pdf}
+  \end{figure}
+\end{frame}
+\begin{frame}{Results}
+  \begin{table}
+    \centering
+    \begin{tabular}{lrrrr}
+      \toprule
+      {} &        Belgium &      Wallonia &      Brussels &      Flanders \\
+      \midrule
+      R²  for training data  &           0.43 &          0.53 &          0.69 &          0.44 \\
+      R² for testing data   &           0.42 &          0.53 &          0.60 &          0.40 \\
+      RMSE/mean price  & 35\% & 36\% & 30\% &30\% \\
+      Size of data          &       12691 &       3410 &       1927&       7354 \\
+      Size of training data &        8502 &       2284 &       1291 &       4927 \\
+      Size of test data     &        4189 &       1126 &        636 &       2427 \\
+      \bottomrule
+    \end{tabular}
+    \caption{Results by region}
+  \end{table}
+\end{frame}
+\begin{frame}{Results}
+    \begin{table}
+    \centering
+      \begin{tabular}{lrrrr}
+\toprule
+{} &       Belgium &      Wallonia &      Brussels &      Flanders \\
+\midrule
+R² for training data  &          0.52 &          0.64 &          0.69 &          0.47 \\
+R² for testing data   &          0.49 &          0.37 &          0.57 &          0.52 \\
+RMSE/mean price  & 31\% & 30\% & 30\% & 28\% \\
+Size of data          &       6859 &       1267 &       1694 &       3898 \\
+Size of training data &       4595 &        848 &       1134 &       2611 \\
+Size of test data     &       2264 &        419 &        560 &       1287 \\
+\bottomrule
+\end{tabular}
+    \caption{Results by region for flats}
+  \end{table}
+
+
+\end{frame}
+\begin{frame}{Results}
+    \begin{table}
+    \centering
+\begin{tabular}{lrrr}
+\toprule
+{} &        Belgium &       Wallonia &      Flanders \\
+\midrule
+R² for training data  &           0.41 &           0.55 &          0.40 \\
+R² for testing data   &           0.39 &           0.50 &          0.38 \\
+RMSE/mean price  & 37\% & 41\% & 28\% \\
+Size of data          &        5832 &        2143 &       3456 \\
+Size of training data &        3907 &        1435 &       2315 \\
+Size of test data     &        1925 &         708 &       1141 \\
+\bottomrule
+\end{tabular}
+    \caption{Results by region for houses}
+  \end{table}
+
+
+\end{frame}
+\section{Going further}
+\begin{frame}{What I tried}
+  I tried other linear models: several for overfitting (Lasso, Ridge, ElasticNet) and polynomial models. The only improvement was for polynomial models (of degree 3) but the calculations take over 15' per training.
+
+  Overall, my impression is that the data is not processed enough or corrupt.
+  heteroscedasticity box-plot?
+\end{frame}
+
+\begin{frame}{What I would like to try}
+  While it would be interessesting to investigate non-linear models, I would like experiment more the linearity assumption. One problem with the data is the presence of heteroscedasticity:
+
+  \begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.5]{scater.pdf}
+  \end{figure}
+\end{frame}
+\begin{frame}
+  On the other hand, the price (and other features) have the following distribution (that looks like a $\log$-normal one):
+  \begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.5]{dist.pdf}
+  \end{figure}
+  All this suggests to try transformations of the data, such as a $\log$ transformation or a Box-Cox transformation.
+\end{frame}
+\end{document}
